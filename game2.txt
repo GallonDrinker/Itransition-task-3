@@ -1,0 +1,58 @@
+1. Modularization with Classes
+The task asked for separating responsibilities into different classes, so I organized the logic into five classes:
+
+KeyGenerator: Handles cryptographically secure key generation.
+HMACCalculator: Calculates the HMAC (based on SHA-256) for the computer's move.
+MoveEvaluator: Determines the winner of the game by comparing the user's and computer's moves.
+TableGenerator: Creates a table displaying which move wins, loses, or draws.
+Game: Coordinates the game flow (displaying the HMAC, asking for user input, and showing the results).
+2. Steps and Flow of the Game
+The game follows the sequence outlined in the task description:
+
+Command-Line Arguments: The game expects the moves to be passed as command-line arguments.
+
+For example, you can start the game by passing moves like rock paper scissors.
+The program checks that there is an odd number of moves and ensures it's at least 3.
+Key Generation: The game generates a cryptographically secure random key of at least 256 bits using the crypto.randomBytes(32) method in Node.js.
+
+Computer Move and HMAC Calculation:
+
+The computer randomly selects one of the moves.
+An HMAC (Hash-based Message Authentication Code) is generated using the SHA-256 algorithm. The computer’s move acts as the message, and the generated key is used to create the HMAC. This ensures the move is locked in but not revealed yet.
+The HMAC is displayed to the user before they make their move, proving the computer's move is pre-committed and won't change after the user plays.
+User Menu and Input:
+
+The game presents a menu of available moves along with an option to exit (0 - Exit).
+It waits for the user’s input. If the input is valid (between 1 and the number of moves), the game continues; otherwise, it re-prompts for input.
+Move Comparison:
+
+Once the user selects a move, the program compares the user's move with the computer’s move using the MoveEvaluator class.
+The winner is determined based on the circular ordering of moves. Half of the next moves in the list defeat the current move, while half of the previous moves lose to it.
+Displaying the Results:
+
+The user’s move, computer’s move, and the cryptographic key are shown to the user.
+The result (whether the user won, lost, or drew) is displayed.
+The user can verify that the HMAC shown before their move matches the HMAC calculated with the revealed key and computer's move, confirming the computer played fairly.
+3. Key Technical Aspects
+HMAC Calculation:
+
+HMAC is a cryptographic hash function that ensures integrity. It uses the computer’s move as the message and the generated key to create a fixed-length hash (HMAC). The user can verify that the computer didn’t change its move after seeing the user’s move.
+Circular Move Logic:
+
+Moves are ordered in a circular fashion. If there are n moves, half of the moves following the current move defeat it, and the other half preceding it are defeated by it.
+For example, if the moves are rock, paper, scissors, then:
+rock beats scissors but loses to paper.
+In a larger set like rock, Spock, paper, lizard, scissors, the pattern is maintained.
+Command-Line Handling:
+
+The game takes moves as command-line arguments using process.argv, which ensures flexibility in choosing moves, allowing for games with an arbitrary number of odd moves.
+4. Table Generation (Help Feature)
+The table generator dynamically builds a results matrix for all possible combinations of moves. When the user asks for help (using a specific input like ? or any additional trigger), the table is displayed showing the results for each move vs. every other move (win/lose/draw).
+
+5. Error Handling
+The game checks if the number of moves passed as command-line arguments is valid (i.e., odd and ≥ 3).
+Invalid inputs from the user during the game (such as out-of-range selections) are caught, and the user is prompted again to make a valid choice.
+Conclusion:
+The solution is designed to meet the requirements while keeping the code modular and easy to extend. The key elements like cryptography (HMAC), OOP design (separate responsibilities in classes), and user interaction (command-line input) are all implemented in a clean, maintainable way.
+
+If you want to expand this game in the future (e.g., adding more game features or customization options), you can easily adjust the existing classes or add new ones.
